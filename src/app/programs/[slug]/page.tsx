@@ -1,25 +1,25 @@
 import { notFound } from 'next/navigation';
-import { programs } from 'src/data/programs';
-import { staffMembers } from 'src/data/faculty';
-import ProgramHero from 'src/app/components/program/ProgramHero';
-import ProgramMission from 'src/app/components/program/ProgramMission';
-import ProgramOutcomes from 'src/app/components/program/ProgramOutcomes';
-import ProgramCurriculum from 'src/app/components/program/ProgramCurriculum';
-import ProgramLabs from 'src/app/components/program/ProgramLabs';
-import ProgramEligibility from 'src/app/components/program/ProgramEligibility';
-import ProgramFaculty from 'src/app/components/program/ProgramFaculty';
-import ProgramDownloads from 'src/app/components/program/ProgramDownloads';
+import { programs } from '../../../data/programs';
+import { staffMembers } from '../../../data/faculty';
+import ProgramHero from '../../components/program/ProgramHero';
+import ProgramMission from '../../components/program/ProgramMission';
+import ProgramOutcomes from '../../components/program/ProgramOutcomes';
+import ProgramCurriculum from '../../components/program/ProgramCurriculum';
+import ProgramLabs from '../../components/program/ProgramLabs';
+import ProgramEligibility from '../../components/program/ProgramEligibility';
+import ProgramFaculty from '../../components/program/ProgramFaculty';
+import ProgramDownloads from '../../components/program/ProgramDownloads';
 
 interface Props {
   params: { slug: string };
 }
 
 export function generateStaticParams() {
-  return programs.map((p) => ({ slug: p.slug }));
+  return programs.map((p: { slug: any; }) => ({ slug: p.slug }));
 }
 
 export function generateMetadata({ params }: Props) {
-  const program = programs.find((p) => p.slug === params.slug);
+  const program = programs.find((p: { slug: string; }) => p.slug === params.slug);
   if (!program) return { title: 'Program — PTUT' };
   return {
     title: `${program.title} — PTUT`,
@@ -28,7 +28,7 @@ export function generateMetadata({ params }: Props) {
 }
 
 export default function ProgramPage({ params }: Props) {
-  const program = programs.find((p) => p.slug === params.slug);
+  const program = programs.find((p: { slug: string; }) => p.slug === params.slug);
   if (!program) notFound();
 
   const faculty = staffMembers.filter((s) => program.facultySlugs.includes(s.slug));
