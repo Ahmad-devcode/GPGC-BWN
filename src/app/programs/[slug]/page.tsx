@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation';
 import { programs } from '../../../data/programs';
 import { staffMembers } from '../../../data/faculty';
 import ProgramHero from '../../components/program/ProgramHero';
-import ProgramMission from '../../components/program/ProgramMission';
-import ProgramOutcomes from '../../components/program/ProgramOutcomes';
+// import ProgramMission from '../../components/program/ProgramMission';
+// import ProgramOutcomes from '../../components/program/ProgramOutcomes';
 import ProgramCurriculum from '../../components/program/ProgramCurriculum';
 import ProgramLabs from '../../components/program/ProgramLabs';
 import ProgramEligibility from '../../components/program/ProgramEligibility';
@@ -37,8 +37,8 @@ export default function ProgramPage({ params }: Props) {
     <main className="pt-28 pb-24 bg-gradient-to-b from-white to-[#fafbfc] min-h-screen">
       <div className="max-w-[1240px] mx-auto px-6 lg:px-8 space-y-24">
         <ProgramHero program={program} />
-        <ProgramMission mission={program.mission} />
-        <ProgramOutcomes peos={program.peos} plos={program.plos} matrix={program.peoPloMatrix} />
+        {/* <ProgramMission mission={program.mission} /> */}
+        {/* <ProgramOutcomes peos={program.peos} plos={program.plos} matrix={program.peoPloMatrix} /> */}
         <ProgramCurriculum curriculum={program.curriculum} creditHours={program.creditHours} duration={program.duration} />
         <ProgramLabs labs={program.labs} />
         <ProgramEligibility eligibility={program.eligibility} />
