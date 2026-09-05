@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-blue: #0D2B5A;
+  --brand-blue-light: #1A3C7A;
+  --brand-red: #C62828;
+  --brand-red-light: #D32F2F;
+  --bg-alt: #F5F7FA;
+  --text-light: #4A5568;
+  --slate: #64748B;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-inter), -apple-system, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .animate-orbit-1 {
+    animation: orbitRotate1 12s linear infinite;
+  }
+  .animate-orbit-2 {
+    animation: orbitRotate2 15s linear infinite reverse;
+  }
+  .animate-orbit-3 {
+    animation: orbitRotate3 18s linear infinite;
+  }
+  .animate-pulse-slow {
+    animation: circlePulse 3s ease-in-out infinite;
+  }
+}
+
+@keyframes orbitRotate1 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes orbitRotate2 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes orbitRotate3 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes circlePulse {
+  0%, 100% { box-shadow: 0 8px 30px rgba(198, 40, 40, 0.3); }
+  50% { box-shadow: 0 12px 45px rgba(198, 40, 40, 0.45); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
