@@ -1,3 +1,18 @@
+## Backend
+
+This site has a Supabase + Cloudflare R2 backend: content (programs, faculty,
+news, documents, short courses) lives in Supabase Postgres, the admin login
+uses Supabase Auth, and all images/PDFs are stored in Cloudflare R2. Pages
+read through a repository layer (`src/lib/data.ts`) that falls back to the
+static data in `src/data/*` whenever Supabase is not configured, so the site
+builds and renders with no environment variables at all.
+
+**Full setup instructions: [BACKEND-SETUP.md](./BACKEND-SETUP.md)**
+(schema in `supabase/migrations/`, content seeding via `npm run seed`,
+admin panel at `/admin`, contact form at `/contact`).
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

@@ -2,7 +2,10 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { staffMembers } from '../../../data/faculty';
+import { getFacultyMembers } from '../../../lib/data';
 import { ArrowLeft, Mail, Award } from 'lucide-react';
+
+export const revalidate = 300;
 
 interface Props {
   params: { slug: string };
@@ -12,11 +15,12 @@ export function generateStaticParams() {
   return staffMembers.map((m) => ({ slug: m.slug }));
 }
 
-export default function FacultyDetailPage({ params }: Props) {
-  const member = staffMembers.find((m) => m.slug === params.slug);
+export default async function FacultyDetailPage({ params }: Props) {
+  const allMembers = await getFacultyMembers();
+  const member = allMembers.find((m) => m.slug === params.slug);
   if (!member) notFound();
 
-  const related = staffMembers
+  const related = allMembers
     .filter((m) => m.slug !== member.slug && m.department === member.department)
     .slice(0, 3);
 

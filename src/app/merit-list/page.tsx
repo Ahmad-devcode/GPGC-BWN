@@ -1,28 +1,20 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ScrollReveal from '../components/ScrollReveal';
+import { getMeritDocuments } from '../../lib/data';
+import type { SiteDocument } from '../../data/documents';
 import { Download, FileText, AlertCircle, ClipboardList, ListChecks } from 'lucide-react';
 
-const downloads = [
-  { title: 'Undertaking Form', type: 'FORM' },
-  { title: 'Medical Certificate', type: 'FORM' },
-  { title: '2nd List BS Program Fee Challan', type: 'CHALLAN' },
-  { title: 'First Semester Challan for MSC Program', type: 'CHALLAN' },
-  { title: 'SET 2nd List', type: 'LIST' },
-  { title: 'PPG 2nd List', type: 'LIST' },
-  { title: 'MET 2nd List', type: 'LIST' },
-  { title: 'FD 2nd List', type: 'LIST' },
-  { title: 'EET 2nd List', type: 'LIST' },
-  { title: 'CET 2nd List', type: 'LIST' },
-  { title: 'BBIT 2nd List', type: 'LIST' },
-  { title: 'AU 2nd List', type: 'LIST' },
-  { title: 'ArET 2nd List', type: 'LIST' },
-  { title: 'AI 2nd List', type: 'LIST' },
-  { title: '1st Merit List Phase-1 2026 MSMET', type: 'LIST' },
-  { title: '1st Merit List Phase-1 2026 MSET', type: 'LIST' },
-];
+export const revalidate = 300;
 
-export default function MeritListPage() {
+function typeLabel(doc: SiteDocument): string {
+  if (doc.category === 'form') return 'FORM';
+  if (doc.category === 'challan') return 'CHALLAN';
+  return 'LIST';
+}
+
+export default async function MeritListPage() {
+  const downloads = await getMeritDocuments();
   return (
     <>
       <Header />
@@ -69,14 +61,14 @@ export default function MeritListPage() {
               {downloads.map((item, i) => (
                 <ScrollReveal key={i} delay={i * 0.05}>
                   <a
-                    href="#"
+                    href={item.url}
                     className="group flex items-center gap-4 p-5 bg-[#F5F7FA] rounded-xl border border-black/5 hover:border-[#C62828]/30 hover:shadow-md transition-all"
                   >
                     <div className="w-10 h-10 rounded-lg bg-[#0D2B5A] text-white flex items-center justify-center shrink-0">
-                      {item.type === 'FORM' ? <FileText size={18} /> : item.type === 'CHALLAN' ? <ClipboardList size={18} /> : <ListChecks size={18} />}
+                      {item.category === 'form' ? <FileText size={18} /> : item.category === 'challan' ? <ClipboardList size={18} /> : <ListChecks size={18} />}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-[10px] font-bold text-[#C62828] tracking-widest uppercase mb-0.5">{item.type}</div>
+                      <div className="text-[10px] font-bold text-[#C62828] tracking-widest uppercase mb-0.5">{typeLabel(item)}</div>
                       <div className="text-sm font-semibold text-[#0D2B5A] group-hover:text-[#C62828] transition-colors truncate">{item.title}</div>
                     </div>
                     <Download size={16} className="text-[#64748B] group-hover:text-[#C62828] transition-colors shrink-0" />

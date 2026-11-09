@@ -1,16 +1,9 @@
 import Image from 'next/image';
 import ScrollReveal from '../components/ScrollReveal';
+import { getNewsArticles } from '../../lib/data';
 
-const articles = [
-  { img: '/images/campus-2.jpg', cat: 'College', date: 'Aug 18, 2026', title: '28th meeting of the College Academic Council' },
-  { img: '/images/news-2.jpg', cat: 'Careers', date: 'Aug 12, 2026', title: 'Career Counseling Workshop organized for students.' },
-  { img: '/images/news-3.jpg', cat: 'Affiliation', date: 'Aug 05, 2026', title: 'GPGC Bahawalnagar secures affiliation with KFUEIT Rahim Yar Khan' },
-  { img: '/images/news-4.jpg', cat: 'Academics', date: 'Jul 28, 2026', title: 'Appreciation certificates awarded to GPGC faculty members.' },
-  { img: '/images/news-5.jpg', cat: 'Events', date: 'Jul 20, 2026', title: 'Convocation 2026: Celebrating the next generation of graduates' },
-  { img: '/images/news-6.jpg', cat: 'Research', date: 'Jul 15, 2026', title: 'GPGC faculty publishes breakthrough research in local journal' },
-];
-
-export default function News() {
+export default async function News() {
+  const articles = await getNewsArticles();
   return (
     <section id="news" className="py-24 bg-[#F5F7FA]">
       <div className="max-w-[1240px] mx-auto px-6 lg:px-8">

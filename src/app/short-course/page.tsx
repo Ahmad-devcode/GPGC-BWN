@@ -1,9 +1,15 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ScrollReveal from '../components/ScrollReveal';
+import { getShortCourses, getShortCourseDocuments } from '../../lib/data';
 import { Calendar, Clock, CheckCircle, Download, GraduationCap, Sparkles } from 'lucide-react';
 
-export default function ShortCoursePage() {
+export const revalidate = 300;
+
+export default async function ShortCoursePage() {
+  const courses = await getShortCourses();
+  const course = courses[0];
+  const courseDocs = await getShortCourseDocuments(course.slug);
   return (
     <>
       <Header />
@@ -27,21 +33,17 @@ export default function ShortCoursePage() {
                 <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden h-full">
                   <div className="bg-gradient-to-r from-[#0D2B5A] to-[#1A3C7A] p-8 text-white">
                     <div className="inline-flex items-center gap-2 bg-[#C62828] text-white text-xs font-bold px-3 py-1 rounded mb-4 tracking-wider">
-                      ADMISSIONS OPEN
+                      {course.isOpen ? 'ADMISSIONS OPEN' : 'ADMISSIONS CLOSED'}
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold mb-2">Denim Supervisor</h2>
-                    <p className="text-white/70">6 Months Short Course at Punjab Tianjin University of Technology Lahore</p>
+                    <h2 className="text-2xl md:text-3xl font-bold mb-2">{course.title}</h2>
+                    <p className="text-white/70">{course.subtitle}</p>
                   </div>
                   <div className="p-8">
                     <h3 className="text-lg font-bold text-[#0D2B5A] mb-4 flex items-center gap-2">
                       <Sparkles size={18} className="text-[#C62828]" /> Course Outcomes
                     </h3>
                     <ul className="space-y-3">
-                      {[
-                        'Can run your own business',
-                        'Can be Quality, Stitching and Pattern making expert',
-                        'Can get jobs in different textile and fashion industries / Brands',
-                      ].map((outcome, i) => (
+                      {course.outcomes.map((outcome, i) => (
                         <li key={i} className="flex items-start gap-3 text-[#4A5568]">
                           <CheckCircle size={18} className="text-[#C62828] shrink-0 mt-0.5" />
                           <span>{outcome}</span>
@@ -61,21 +63,21 @@ export default function ShortCoursePage() {
                         <Calendar size={18} className="text-[#C62828] shrink-0 mt-0.5" />
                         <div>
                           <div className="text-xs text-[#64748B] font-medium uppercase">Course Start</div>
-                          <div className="text-[#0D2B5A] font-bold">22 October 2024</div>
+                          <div className="text-[#0D2B5A] font-bold">{course.startDate}</div>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <Clock size={18} className="text-[#C62828] shrink-0 mt-0.5" />
                         <div>
                           <div className="text-xs text-[#64748B] font-medium uppercase">Last Date to Apply</div>
-                          <div className="text-[#0D2B5A] font-bold">21 June 2024</div>
+                          <div className="text-[#0D2B5A] font-bold">{course.applyDeadline}</div>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
                         <GraduationCap size={18} className="text-[#C62828] shrink-0 mt-0.5" />
                         <div>
                           <div className="text-xs text-[#64748B] font-medium uppercase">Duration</div>
-                          <div className="text-[#0D2B5A] font-bold">6 Months</div>
+                          <div className="text-[#0D2B5A] font-bold">{course.durationText}</div>
                         </div>
                       </div>
                     </div>
@@ -86,17 +88,13 @@ export default function ShortCoursePage() {
                   <div className="bg-[#0D2B5A] rounded-xl p-6 text-white">
                     <h3 className="text-xs font-bold uppercase tracking-widest mb-4">Downloads</h3>
                     <div className="space-y-3">
-                      {[
-                        { label: 'Advertisement' },
-                        { label: 'Application Form' },
-                        { label: 'Course Fee Challan' },
-                      ].map((doc, i) => (
+                      {courseDocs.map((doc, i) => (
                         <a
                           key={i}
-                          href="#"
+                          href={doc.url}
                           className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors group"
                         >
-                          <span className="text-sm font-medium">{doc.label}</span>
+                          <span className="text-sm font-medium">{doc.title}</span>
                           <Download size={16} className="text-[#C62828] group-hover:translate-y-0.5 transition-transform" />
                         </a>
                       ))}
