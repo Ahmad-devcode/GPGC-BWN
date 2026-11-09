@@ -30,8 +30,10 @@ const ALLOWED_CONTENT_TYPES = new Set([
 ]);
 
 type StaffAuth =
-  | { ok: true; userId: string }
+  | { ok: true; userId: string; role: string }
   | { ok: false; error: string; status: number };
+
+const UPLOAD_ROLES = ['admin', 'editor', 'clerk', 'teacher'];
 
 async function requireStaff(): Promise<StaffAuth> {
   const supabase = createClient();
@@ -46,10 +48,24 @@ async function requireStaff(): Promise<StaffAuth> {
     .eq('id', user.id)
     .single();
 
-  if (!profile || !['admin', 'editor'].includes(profile.role)) {
-    return { ok: false, error: 'Admin or editor role required', status: 403 };
+  if (!profile || !UPLOAD_ROLES.includes(profile.role)) {
+    return { ok: false, error: 'A staff role is required to upload files', status: 403 };
   }
-  return { ok: true, userId: user.id };
+  return { ok: true, userId: user.id, role: profile.role };
+}
+
+/** Which folders each role may upload to. */
+function folderAllowed(role: string, folder: string): boolean {
+  if (role === 'admin' || role === 'editor') return true;
+  if (role === 'clerk') {
+    return (
+      folder.startsWith('pdfs/') ||
+      folder === 'images/news' ||
+      folder === 'images/campus'
+    );
+  }
+  if (role === 'teacher') return folder === 'images/faculty';
+  return false;
 }
 
 export async function POST(request: NextRequest) {
@@ -89,6 +105,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: `folder must be one of: ${R2_FOLDERS.join(', ')}` },
       { status: 400 },
+    );
+  }
+  if (!folderAllowed(auth.role, folder)) {
+    return NextResponse.json(
+      { error: `Your role (${auth.role}) cannot upload to ${folder}.` },
+      { status: 403 },
     );
   }
   if (!ALLOWED_CONTENT_TYPES.has(contentType)) {

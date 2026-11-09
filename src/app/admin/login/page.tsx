@@ -112,6 +112,14 @@ export default function AdminLoginPage() {
             )}
           </button>
         </form>
+
+        <p className="text-xs text-[#64748B] mt-6">
+          Principal, Clerk or Teacher? Use the{' '}
+          <a href="/portal/login" className="underline font-medium">
+            staff portal sign in
+          </a>
+          .
+        </p>
       </div>
     </div>
   );

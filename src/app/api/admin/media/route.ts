@@ -1,17 +1,28 @@
 // src/app/api/admin/media/route.ts
 // POST — register a file that was just uploaded to R2 into `media_assets`.
-// GET  — list the most recent media assets (admin/editor only).
+// GET  — list the most recent media assets (any staff role).
+// The caller is verified by session + role; the insert itself runs through
+// the service-role client (server-side only) so clerk/teacher uploads can
+// register their files without broad table permissions.
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../../lib/supabase/server';
+import { createClient, createAdminClient } from '../../../../lib/supabase/server';
 import { getPublicUrl } from '../../../../lib/r2';
 
 export const dynamic = 'force-dynamic';
 
+const READ_ROLES = ['admin', 'editor', 'principal', 'clerk', 'teacher'];
+const WRITE_ROLES = ['admin', 'editor', 'clerk', 'teacher'];
+
 type StaffAuth =
-  | { ok: true; supabase: ReturnType<typeof createClient>; user: { id: string } }
+  | {
+      ok: true;
+      supabase: ReturnType<typeof createClient>;
+      user: { id: string };
+      role: string;
+    }
   | { ok: false; error: string; status: number };
 
-async function requireStaff(): Promise<StaffAuth> {
+async function requireStaff(roles: string[]): Promise<StaffAuth> {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return { ok: false, error: 'Supabase is not configured on the server.', status: 503 };
   }
@@ -27,14 +38,14 @@ async function requireStaff(): Promise<StaffAuth> {
     .eq('id', user.id)
     .single();
 
-  if (!profile || !['admin', 'editor'].includes(profile.role)) {
-    return { ok: false, error: 'Admin or editor role required', status: 403 };
+  if (!profile || !roles.includes(profile.role)) {
+    return { ok: false, error: 'A staff role is required', status: 403 };
   }
-  return { ok: true, supabase, user };
+  return { ok: true, supabase, user, role: profile.role };
 }
 
 export async function GET() {
-  const auth = await requireStaff();
+  const auth = await requireStaff(READ_ROLES);
   if (!auth.ok) {
     return NextResponse.json({ error: auth.error }, { status: auth.status });
   }
@@ -50,7 +61,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await requireStaff();
+  const auth = await requireStaff(WRITE_ROLES);
   if (!auth.ok) {
     return NextResponse.json({ error: auth.error }, { status: auth.status });
   }
@@ -72,7 +83,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'key is required' }, { status: 400 });
   }
 
-  const { data, error } = await auth.supabase
+  const { data, error } = await createAdminClient()
     .from('media_assets')
     .insert({
       key: body.key,

@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
   Newspaper,
   FolderOpen,
+  Users,
 } from 'lucide-react';
 
 const FOLDER_OPTIONS: { value: string; label: string }[] = [
@@ -231,12 +232,22 @@ export default function AdminDashboard({ userEmail, role, initialAssets }: Props
             </span>
           </p>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-black/10 rounded-lg text-sm font-semibold text-[#0D2B5A] hover:border-[#C62828]/40 hover:text-[#C62828] transition-colors"
-        >
-          <LogOut size={15} /> Sign out
-        </button>
+        <div className="flex items-center gap-2">
+          {role === 'admin' && (
+            <a
+              href="/admin/users"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-black/10 rounded-lg text-sm font-semibold text-[#0D2B5A] hover:border-[#0D2B5A]/40 transition-colors"
+            >
+              <Users size={15} /> Portal users
+            </a>
+          )}
+          <button
+            onClick={handleSignOut}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-black/10 rounded-lg text-sm font-semibold text-[#0D2B5A] hover:border-[#C62828]/40 hover:text-[#C62828] transition-colors"
+          >
+            <LogOut size={15} /> Sign out
+          </button>
+        </div>
       </div>
 
       {notice && (

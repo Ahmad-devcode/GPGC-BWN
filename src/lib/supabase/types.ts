@@ -4,7 +4,13 @@
 // the repository layer (src/lib/data.ts) maps rows to the frontend shapes
 // defined in src/data/*.ts.
 
-export type UserRole = 'admin' | 'editor' | 'viewer';
+export type UserRole =
+  | 'admin'
+  | 'principal'
+  | 'clerk'
+  | 'teacher'
+  | 'editor'
+  | 'viewer';
 
 export interface ProfileRow {
   id: string;
