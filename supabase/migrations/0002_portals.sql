@@ -72,11 +72,12 @@ create policy "contact_messages_staff_select" on public.contact_messages
   for select
   using (public.can_read_messages());
 
+-- Update is admin + clerk only — the principal stays read-only.
 drop policy if exists "contact_messages_staff_update" on public.contact_messages;
 create policy "contact_messages_staff_update" on public.contact_messages
   for update
-  using (public.can_read_messages())
-  with check (public.can_read_messages());
+  using (public.current_role() in ('admin', 'clerk'))
+  with check (public.current_role() in ('admin', 'clerk'));
 
 -- ---------------------------------------------------------------------------
 -- 4. documents — clerk can create and edit document entries (admin already
@@ -119,3 +120,23 @@ drop policy if exists "media_assets_staff_select" on public.media_assets;
 create policy "media_assets_staff_select" on public.media_assets
   for select
   using (public.is_staff());
+
+-- ---------------------------------------------------------------------------
+-- 7. SELECT-own policies. Postgres checks SELECT visibility for rows an
+--    INSERT/UPDATE returns, and a desk user must see their own unpublished
+--    rows — without these, a clerk cannot add an unpublished document and a
+--    teacher cannot see their own unpublished profile row.
+-- ---------------------------------------------------------------------------
+drop policy if exists "documents_clerk_select" on public.documents;
+create policy "documents_clerk_select" on public.documents
+  for select
+  using (public.current_role() = 'clerk');
+
+drop policy if exists "faculty_teacher_select_own" on public.faculty_members;
+create policy "faculty_teacher_select_own" on public.faculty_members
+  for select
+  using (
+    public.current_role() = 'teacher'
+    and email is not null
+    and lower(email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+  );
